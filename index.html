@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
+	<link rel="stylesheet" href="./css/normalize.css">
+	<link rel="stylesheet" href="./css/foundation.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+	<script src="./modernizr.js"></script>
+</head>
+<body>
+
+	<div class="row">
+		<div class="large-12 column">
+			<h1>MovieList</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="large-9 columns">
+			
+			<h2>Search</h2>
+
+			<input type="text" id="movFilter" placeholder="Search for title, genre, year, or min-rating">
+
+			<table class="movies" width="100%">
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Original title</th>
+						<th>Year</th>
+						<th>Rating</th>
+						<th class="show-for-medium-up">Genre</th>
+						<th>Added</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+				<tfoot>
+					<tr class="show-for-medium-up">
+						<td class="amount" colspan="5"></td>
+						<td class="scroll">
+							<span class="back" data-tooltip title="previous items">&#10094;</span>
+							<span class="for" data-tooltip title="next items">&#10095;</span>
+						</td>
+					</tr>
+					<tr class="show-for-small-only">
+						<td class="amount" colspan="4"></td>
+						<td class="scroll">
+							<span class="back" data-tooltip title="previous items">&#10094;</span>
+							<span class="for" data-tooltip title="next items">&#10095;</span>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+
+			<h2>Details</h2>
+			<p class="clickToDetail">Click on a title to show its details.</p>
+			<div class="row details">
+				<p class="hidden id"></p>
+				<div class="columns large-3 medium-2 show-for-medium-up">
+					<img src="./poster.jpg" class="poster">
+				</div>
+				<div class="columns large-9 medium-10 small-12">
+					<div class="row">
+						<div class="columns small-11">
+							<h3><span class="title">The Hobbit: The Desolation of Smaug</span> <small class="year">2013</small></h3>
+						</div>
+						<div class="columns small-1"><span data-tooltip class="has-tip addToSelection button tiny radius" title="Add to selection">+</span></div>
+					</div>
+					<h4 class="tagline">Beyond darkness... beyond desolation... lies the greatest danger of all.</h4>
+					<p class="plot">
+						The Dwarves, Bilbo and Gandalf have successfully escaped the Misty Mountains, and Bilbo has gained the One Ring. They all continue their journey to get their gold back from the Dragon, Smaug.
+					</p>
+
+					<div class="row">
+						<div class="columns large-6 medium-6 small-6">
+							<h3>Genre</h3>
+							<p class="genre"></p>
+							<h3>Writer</h3>
+							<p class="writer"></p>
+							<h3>Director</h3>
+							<p class="director"></p>
+							<h3>Country</h3>
+							<p class="country"></p>
+						</div>
+						<div class="columns large-6 medium-6 small-6">
+							<h3>Cast</h3>
+							<p class="cast">
+						</div>
+					</div>
+			
+				</div>
+			</div>
+
+		</div>
+		<div class="large-3 columns selection">
+			<div>
+				<h2>Selection</h2>
+				<p class="selectionHint">You did not select any movies yet.</p>
+				<ul class="square">
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<script src="./data.js"></script>
+	<script src="./jquery-1.10.1.min.js"></script>
+	<script src="./jquery-ui.js"></script>
+	<script src="./foundation.min.js"></script>
+	<script>
+    	$(document).foundation();
+  	</script>
+	<script src="./beauty.js"></script>
+</body>
+</html>
