@@ -1,4 +1,8 @@
 node_modules
+beauty.js
+css/style.css
+data.js
+thumbs/*
 
 # OS Stuff
 .DS_Store
