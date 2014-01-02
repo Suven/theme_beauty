@@ -4,7 +4,6 @@ if !String.prototype.contains?
 		-1 isnt String.prototype.indexOf.call(this, needle, startIndex)
 
 $ ->
-	console.log data[0]
 	tablesize = 6
 	tablePos = 0
 
