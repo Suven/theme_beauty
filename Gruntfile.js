@@ -41,8 +41,8 @@ module.exports = function(grunt) {
     },
     watch: {
       files: [
-        '/**/*.coffee',
-        '/**/*.less',
+        '**/*.coffee',
+        '**/*.less',
       ],
       tasks: ['default']
     }
