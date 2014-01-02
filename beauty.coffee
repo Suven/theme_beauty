@@ -1,3 +1,8 @@
+# Polyfill for String.contains
+if !String.prototype.contains?
+	String.prototype.contains = (needle, startIndex) ->
+		-1 isnt String.prototype.indexOf.call(this, needle, startIndex)
+
 $ ->
 	console.log data[0]
 	tablesize = 6
