@@ -44,7 +44,7 @@ module.exports = function(grunt) {
         '**/*.coffee',
         '**/*.less',
       ],
-      tasks: ['default']
+      tasks: ['dev']
     }
   });
 
@@ -55,5 +55,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', ['coffee', 'less', 'imagemin', 'uglify']);
+  grunt.registerTask('dev', ['coffee', 'less']);
 
 };
