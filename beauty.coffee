@@ -3,101 +3,104 @@ if !String.prototype.contains?
 	String.prototype.contains = (needle, startIndex) ->
 		-1 isnt String.prototype.indexOf.call(this, needle, startIndex)
 
-$ ->
-	tablesize = 6
-	tablePos = 0
+tablesize = 6
+tablePos = 0
 
-	like = (haystack, needle) ->
-		haystack.contains needle
+like = (haystack, needle) ->
+	haystack.contains needle
 
-	isNumber = (value) ->
-    	if !value?
-    		return false
+isNumber = (value) ->
+	if !value?
+		return false
 
-    	if typeof value is 'number'
-        	return true
+	if typeof value is 'number'
+		return true
 
-    	!isNaN(value - 0)
+	!isNaN(value - 0)
 
-	inFilter = (mov) ->
-		filterVal = $('#movFilter').val()
+inFilter = (mov) ->
+	filterVal = $('#movFilter').val()
 
-		if !filterVal? or filterVal.trim() == ""
+	if !filterVal? or filterVal.trim() == ""
+		return true
+
+	if isNumber filterVal
+		n = parseFloat(filterVal)
+		if n < 10 and mov.rating >= n
+			return true
+		if n > 1500 and mov.year is n 
 			return true
 
-		if isNumber filterVal
-			n = parseFloat(filterVal)
-			if n < 10 and mov.rating >= n
-				return true
-			if n > 1500 and mov.year is n 
-				return true
+	like(mov.label, filterVal) or like(mov.originaltitle, filterVal) or like(mov.genre.join(), filterVal)
 
-		like(mov.label, filterVal) or like(mov.originaltitle, filterVal) or like(mov.genre.join(), filterVal)
+cut = (str, l) ->
+	if Array.isArray(str)
+		str = str.join(", ")
+	if str.length - 3 > l
+		return "#{str.substr(0, l - 3)}..."
+	if str?
+		""
 
-	cut = (str, l) ->
-		if Array.isArray(str)
-			str = str.join(", ")
-		if str.length - 3 > l
-			return "#{str.substr(0, l - 3)}..."
-		if str?
-			""
+shortDate = (d) ->
+	d = new Date(d.substr(0,10))
+	"#{d.getDate()}.#{d.getMonth() + 1}.#{d.getFullYear()}"
 
-	shortDate = (d) ->
-		d = new Date(d.substr(0,10))
-		"#{d.getDate()}.#{d.getMonth() + 1}.#{d.getFullYear()}"
+updateList = (skip) ->
+	$('table.movies tbody').html ''
+	count = 0
+	for mov in data
+		if inFilter mov
+			skip--
 
-	updateList = (skip) ->
-		$('table.movies tbody').html ''
-		count = 0
-		for mov in data
-			if inFilter mov
-				skip--
+			if skip >= 1
+				continue
 
-				if skip >= 1
-					continue
+			selClass = ""
+			selClass = " sel" if $('.details .id').html() is mov.movieid.toString()
 
-				count++
+			count++
+			if count < tablesize
+				$('table.movies tbody').append """
+					<tr data-id="#{mov.movieid}" class="#{selClass}">
+						<td>#{mov.label}</td>
+						<td>#{mov.originaltitle}</td>
+						<td>#{mov.year}</td>
+						<td>#{mov.rating.toPrecision(2)}</td>
+						<td class="show-for-medium-up">#{cut(mov.genre, 25)}</td>
+						<td>#{shortDate(mov.dateadded)}</td>
+					</tr>"""
 
-				if count < tablesize
-					$('table.movies tbody').append "
-						<tr data-id=\"#{mov.movieid}\">
-							<td>#{mov.label}</td>
-							<td>#{mov.originaltitle}</td>
-							<td>#{mov.year}</td>
-							<td>#{mov.rating.toPrecision(2)}</td>
-							<td class=\"show-for-medium-up\">#{cut(mov.genre, 25)}</td>
-							<td>#{shortDate(mov.dateadded)}</td>
-						</tr>"
+	if count > tablesize
+		$('table.movies tfoot td.amount').html("and #{count - tablesize} more...")
+	else
+		$('table.movies tfoot td.amount').html("")
 
-		if count > tablesize
-			$('table.movies tfoot td.amount').html("and #{count - tablesize} more...")
-		else
-			$('table.movies tfoot td.amount').html("")
+getMovie = (id) ->
+	for mov in data
+		return mov if mov.movieid is id
 
-	getMovie = (id) ->
-		for mov in data
-			return mov if mov.movieid is id
+getCastList = (mov) ->
+	str = "<dl class=inline-list>"
+	for pers in mov.cast
+		str += "<dt>#{pers.name}</dt><dd>#{pers.role}</dd>"
+	str += "</dl>"
 
-	getCastList = (mov) ->
-		str = "<dl class=inline-list>"
-		for pers in mov.cast
-			str += "<dt>#{pers.name}</dt><dd>#{pers.role}</dd>"
-		str += "</dl>"
+updateDetails = (id) ->
+	mov = getMovie id
+	if mov?
+		$('.details .year').html mov.year
+		$('.details .title').html mov.label
+		$('.details .tagline').html mov.tagline
+		$('.details .plot').html mov.plot
+		$('.details .genre').html mov.genre.join(", ")
+		$('.details .cast').html getCastList mov
+		$('.details .writer').html mov.writer.join(", ")
+		$('.details .director').html mov.director.join(", ")
+		$('.details .country').html mov.country
+		$('.details .id').html mov.movieid
+		$('.details .poster').attr('src', "./thumbs/#{id}.jpg")
 
-	updateDetails = (id) ->
-		mov = getMovie id
-		if mov?
-			$('.details .year').html mov.year
-			$('.details .title').html mov.label
-			$('.details .tagline').html mov.tagline
-			$('.details .plot').html mov.plot
-			$('.details .genre').html mov.genre.join(", ")
-			$('.details .cast').html getCastList mov
-			$('.details .writer').html mov.writer.join(", ")
-			$('.details .director').html mov.director.join(", ")
-			$('.details .country').html mov.country
-			$('.details .id').html mov.movieid
-			$('.details .poster').attr('src', "./thumbs/#{id}.jpg")
+$ ->
 
 	$('#movFilter').on(
 		'keyup', 
@@ -119,6 +122,9 @@ $ ->
 		'click', 
 		'tr',
 		->
+			$('.movies tbody tr.sel').removeClass 'sel'
+			$(@).addClass 'sel'
+
 			$('.clickToDetail').hide()
 			id = $(@).data('id')
 			if $('.details:visible').length <= 0
