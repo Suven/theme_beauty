@@ -47,8 +47,14 @@ shortDate = (d) ->
 
 updateList = (skip) ->
 	$('table.movies tbody').html ''
+
+	if skip > data.length
+		skip = data.length
+
 	count = 0
+	gcount = 0
 	for mov in data
+		gcount++
 		if inFilter mov
 			skip--
 
@@ -61,7 +67,7 @@ updateList = (skip) ->
 			count++
 			if count < tablesize
 				$('table.movies tbody').append """
-					<tr data-id="#{mov.movieid}" class="#{selClass}">
+					<tr data-p="#{gcount}" data-id="#{mov.movieid}" class="#{selClass}">
 						<td>#{mov.label}</td>
 						<td>#{mov.originaltitle}</td>
 						<td>#{mov.year}</td>
@@ -70,8 +76,8 @@ updateList = (skip) ->
 						<td>#{shortDate(mov.dateadded)}</td>
 					</tr>"""
 
-	if count > tablesize
-		$('table.movies tfoot td.amount').html("and #{count - tablesize} more...")
+	if count >= tablesize
+		$('table.movies tfoot td.amount').html("and #{count - tablesize + 1} more...")
 	else
 		$('table.movies tfoot td.amount').html("")
 
@@ -100,6 +106,36 @@ updateDetails = (id) ->
 		$('.details .id').html mov.movieid
 		$('.details .poster').attr('src', "./thumbs/#{id}.jpg")
 
+goToPos = (pos) ->
+	if $('.movies tbody tr.sel').data('p') < pos
+		dir = "right"
+		dirI = "left"
+	else
+		dir = "left"
+		dirI = "right"
+
+	targetRow = $(".movies tbody tr[data-p=#{pos}]")
+
+	$('.movies tbody tr.sel').removeClass 'sel'
+	targetRow.addClass 'sel'
+
+	id = targetRow.data('id')
+	if $('.details:visible').length <= 0
+		$('.clickToDetail').hide()
+		updateDetails id
+		$('.details').show 'drop'
+	else
+		$('.details').hide(
+			'drop'
+				direction: dirI
+			->
+				updateDetails id
+				$('.details').show(
+					'drop'
+						direction: dir
+				)
+		)
+
 $ ->
 
 	$('#movFilter').on(
@@ -122,21 +158,7 @@ $ ->
 		'click', 
 		'tr',
 		->
-			$('.movies tbody tr.sel').removeClass 'sel'
-			$(@).addClass 'sel'
-
-			$('.clickToDetail').hide()
-			id = $(@).data('id')
-			if $('.details:visible').length <= 0
-				updateDetails id
-				$('.details').show('drop')
-			else
-				$('.details').hide(
-					'drop',
-					->
-						updateDetails id
-						$('.details').show('drop')
-				)
+			goToPos $(@).data 'p'
 
 	)
 
@@ -151,6 +173,31 @@ $ ->
 			if $(".selection li.id-#{id}").length <= 0
 				$('.selection ul').append("<li class=\"id-#{id}\">#{$('.title').html()}</li>")
 				$('.selection ul > li').sort(ascSort).appendTo('.selection ul')
+	)
+
+	$('body').on(
+		'keydown'
+		(e) ->
+			if e.keyCode is 39 or e.keyCode is 37
+
+				if $('.movies tbody tr.sel').data('p')? 
+					pos = $('.movies tbody tr.sel').data 'p'
+					switch e.keyCode
+						when 39 then pos++
+						when 37 then pos--
+
+					pos = 1 if pos < 1
+				else
+					pos = 1
+
+				if pos > $('.movies tbody tr:last-of-type').data 'p'
+					tablePos += tablesize
+					updateList tablePos
+				else if pos < $('.movies tbody tr').first().data 'p'
+					tablePos -= tablesize
+					updateList tablePos
+
+				goToPos pos
 	)
 
 	updateList()
