@@ -2,6 +2,11 @@
 	"name": "beauty",
 	"version": "0.1.0",
 	"desc": "Simple elegant and responsive theme focused on searching single movies",
+	"author": "Suven",
+	"url": "http://github.com/suven/beauty",
+	"cover": {
+		"prefferedWidth": 150
+	},
 	"features": [
 		"Search movies by name, director, rating, year and more",
 		"Create copy-n-paste selections of movies",
