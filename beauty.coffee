@@ -104,7 +104,13 @@ updateDetails = (id) ->
 		$('.details .director').html mov.director.join(", ")
 		$('.details .country').html mov.country
 		$('.details .id').html mov.movieid
-		$('.details .poster').attr('src', "./thumbs/#{id}.jpg")
+		$('.details .poster').attr('src', "")
+		$('.details .poster').attr('data-original', "./thumbs/#{id}.jpg")
+		$('.details .poster').lazyload(
+			effect: 'fadeIn'
+			event: 'load'
+		)
+		$('.details .poster').trigger 'load'
 
 goToPos = (pos) ->
 	if $('.movies tbody tr.sel').data('p') < pos
