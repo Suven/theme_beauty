@@ -7,7 +7,7 @@ tablesize = 6
 tablePos = 0
 
 like = (haystack, needle) ->
-	haystack.contains needle
+	haystack.toLowerCase().contains needle.toLowerCase()
 
 isNumber = (value) ->
 	if !value?
