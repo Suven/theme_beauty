@@ -56,9 +56,9 @@ updateList = (skip) ->
 	for mov in data
 		gcount++
 		if inFilter mov
-			skip--
-
-			if skip >= 1
+			
+			if skip > 0
+				skip--
 				continue
 
 			selClass = ""
@@ -112,8 +112,11 @@ updateDetails = (id) ->
 		)
 		$('.details .poster').trigger 'load'
 
-goToPos = (pos) ->
-	if $('.movies tbody tr.sel').data('p') < pos
+goToPos = (pos, dir) ->
+
+	dir = 'left' if !dir?
+
+	if dir is 'left' or $('.movies tbody tr.sel').data('p') < pos
 		dir = "right"
 		dirI = "left"
 	else
@@ -152,11 +155,11 @@ $ ->
 	)
 
 	$('span.for').click ->
-		tablePos += tablesize
+		tablePos += tablesize - 1
 		updateList tablePos
 
 	$('span.back').click ->
-		tablePos -= tablesize
+		tablePos -= tablesize - 1
 		tablePos = 0 if tablePos < 0
 		updateList tablePos
 
@@ -196,14 +199,16 @@ $ ->
 				else
 					pos = 1
 
-				if pos > $('.movies tbody tr:last-of-type').data 'p'
-					tablePos += tablesize
+				if pos > $('.movies tbody tr').last().data 'p'
+					tablePos += tablesize - 1
+					dir = 'left'
 					updateList tablePos
 				else if pos < $('.movies tbody tr').first().data 'p'
-					tablePos -= tablesize
+					tablePos -= tablesize - 1
+					dir = 'right'
 					updateList tablePos
 
-				goToPos pos
+				goToPos(pos, dir)
 	)
 
 	updateList()
