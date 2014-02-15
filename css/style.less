@@ -84,6 +84,22 @@ table.movies {
 			text-shadow: white 0 0 2px;
 		}
 	}
+
+	th {
+		color: #333333;
+	}
+
+	th[data-sort] {
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	th.active {
+		color: #000000;
+	}
 }
 
 .details {

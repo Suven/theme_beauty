@@ -72,8 +72,8 @@ updateList = (skip) ->
 						<td>#{mov.originaltitle}</td>
 						<td>#{mov.year}</td>
 						<td>#{mov.rating.toPrecision(2)}</td>
-						<td class="show-for-medium-up">#{cut(mov.genre, 25)}</td>
 						<td>#{shortDate(mov.dateadded)}</td>
+						<td class="show-for-medium-up">#{cut(mov.genre, 25)}</td>
 					</tr>"""
 
 	if count >= tablesize
@@ -145,6 +145,53 @@ goToPos = (pos, dir) ->
 				)
 		)
 
+ascSort = (a, b) ->
+	($(b).text()) < ($(a).text()) ? 1 : -1;
+
+genericSort = (a, b) ->
+	if a < b
+		return -1
+	else
+		return 1
+	return 0
+
+labelSort = (a, b) ->
+	genericSort(a.label, b.label)
+
+originaltitleSort = (a, b) ->
+	genericSort(a.originaltitle, b.originaltitle)
+
+yearSort = (a, b) ->
+	genericSort(a.year, b.year)
+
+ratingSort = (a, b) ->
+	genericSort(a.rating, b.rating)
+
+dateaddedSort = (a, b) ->
+	genericSort(a.dateadded, b.dateadded)
+
+lastCol = 'dateadded'
+lasOrdAsc = true
+sortDataBy = (colName) ->
+
+	if lastCol is colName
+		order = if lasOrdAsc then 'desc' else 'asc'
+		lasOrdAsc = !lasOrdAsc
+	else
+		lasOrdAsc = false
+
+	lastCol = colName
+
+	switch colName
+		when 'label' then data.sort labelSort
+		when 'originaltitle' then data.sort originaltitleSort
+		when 'year' then data.sort yearSort
+		when 'rating' then data.sort ratingSort
+		when 'dateadded' then data.sort dateaddedSort
+
+	if order is 'desc'
+		data.reverse()
+
 $ ->
 
 	$('#movFilter').on(
@@ -171,18 +218,12 @@ $ ->
 
 	)
 
-	ascSort = (a, b) ->
-		($(b).text()) < ($(a).text()) ? 1 : -1;
-
-	$('.addToSelection').on(
-		'click',
-		->
-			$('.selectionHint').hide()
-			id = $('.id').html()
-			if $(".selection li.id-#{id}").length <= 0
-				$('.selection ul').append("<li class=\"id-#{id}\">#{$('.title').html()}</li>")
-				$('.selection ul > li').sort(ascSort).appendTo('.selection ul')
-	)
+	$('.addToSelection').click ->
+		$('.selectionHint').hide()
+		id = $('.id').html()
+		if $(".selection li.id-#{id}").length <= 0
+			$('.selection ul').append("<li class=\"id-#{id}\">#{$('.title').html()}</li>")
+			$('.selection ul > li').sort(ascSort).appendTo('.selection ul')
 
 	$('body').on(
 		'keydown'
@@ -210,5 +251,18 @@ $ ->
 
 				goToPos(pos, dir)
 	)
+
+	$('table.movies th[data-sort]').click (e) ->
+		e.preventDefault()
+
+		$('table.movies th[data-sort]').removeClass 'active'
+		$(@).addClass 'active'
+
+		sortCol = $(@).data('sort')
+
+		sortDataBy sortCol
+
+		tablePos = 0
+		updateList()
 
 	updateList()
